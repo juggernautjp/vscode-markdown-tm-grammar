@@ -5,6 +5,29 @@ patterns:
 - {include: '#frontMatter'}
 - {include: '#block'}
 repository:
+  frontMatter:
+    patterns:
+    - {include: '#frontMatter_yaml'}
+    - {include: '#frontMatter_toml'}
+    - {include: '#frontMatter_json'}
+  frontMatter_yaml:
+    begin: \A-{3}\s*$
+    contentName: meta.embedded.block.yaml.frontmatter
+    patterns:
+    - {include: source.yaml}
+    end: (^|\G)-{3}|\.{3}\s*$
+  frontMatter_toml:
+    begin: \A+{3}\s*$
+    contentName: meta.embedded.block.toml.frontmatter
+    patterns:
+    - {include: source.ini}
+    end: (^|\G)+{3}|\.{3}\s*$
+  frontMatter_json:
+    begin: \A\{\s*$
+    contentName: meta.embedded.block.json.frontmatter
+    patterns:
+    - {include: source.json}
+    end: (^|\G)\}\s*$
   block:
     patterns:
     - {include: '#separator'}
@@ -200,12 +223,6 @@ repository:
   raw_block: {begin: '(^|\G)([ ]{4}|\t)', name: markup.raw.block.markdown, while: '(^|\G)([
       ]{4}|\t)'}
   separator: {match: '(^|\G)[ ]{0,3}([\*\-\_])([ ]{0,2}\2){2,}[ \t]*$\n?', name: meta.separator.markdown}
-  frontMatter:
-    begin: \A-{3}\s*$
-    contentName: meta.embedded.block.frontmatter
-    patterns:
-    - {include: source.yaml}
-    end: (^|\G)-{3}|\.{3}\s*$
   inline:
     patterns:
     - {include: '#ampersand'}

@@ -2,7 +2,10 @@
 
 const fs = require('fs');
 const path = require('path');
+// https://www.npmjs.com/package/js-yaml
+// https://github.com/nodeca/js-yaml
 const yaml = require('js-yaml');
+// https://www.npmjs.com/package/plist
 const plist = require('plist');
 
 const languages = [
@@ -64,7 +67,9 @@ const languages = [
 	{ name: 'erlang', language: 'erlang', identifiers: ['erlang'], source: 'source.erlang' },
 	{ name: 'elixir', language: 'elixir', identifiers: ['elixir'], source: 'source.elixir' },
 	{ name: 'latex', language: 'latex', identifiers: ['latex', 'tex'], source: 'text.tex.latex' },
-	{ name: 'bibtex', language: 'bibtex', identifiers: ['bibtex'], source: 'text.bibtex' }
+	{ name: 'bibtex', language: 'bibtex', identifiers: ['bibtex'], source: 'text.bibtex' },
+
+	{ name: 'toml', language: 'toml', identifiers: ['toml'], source: 'source.ini' }
 ];
 
 const fencedCodeBlockDefinition = (name, identifiers, sourceScope, language, additionalContentName) => {
@@ -123,14 +128,28 @@ const fencedCodeBlockIncludes = () =>
 		.map(language => fencedCodeBlockInclude(language.name))
 		.join('\n');
 
+const YAML_OPTS = {
+	schema: yaml.JSON_SCHEMA,
+	json: true,
+};
 
 const buildGrammar = () => {
 	let text = fs.readFileSync(path.join(__dirname, 'markdown.tmLanguage.base.yaml'), "utf8");
-	text = text.replace(/\s*\{\{languageIncludes\}\}/, '\n' + indent(2, fencedCodeBlockIncludes()))
-	text = text.replace(/\s*\{\{languageDefinitions\}\}/, '\n' + indent(1, fencedCodeBlockDefinitions()))
+	text = text.replace(/\s*\{\{languageIncludes\}\}/, '\n' + indent(2, fencedCodeBlockIncludes()));
+	text = text.replace(/\s*\{\{languageDefinitions\}\}/, '\n' + indent(1, fencedCodeBlockDefinitions()));
 
-	const grammar = yaml.safeLoad(text);
+	// Write Yaml format
+	fs.writeFileSync(path.join(__dirname, 'syntaxes', 'markdown.tmLanguage.yaml'), text);
+	// Write JSON format
+	const json_out = yaml.load(text, YAML_OPTS);
+	const json_str = JSON.stringify(json_out, null, '  ');
+	// console.log(json_out);
+	fs.writeFileSync(path.join(__dirname, 'syntaxes', 'markdown.tmLanguage.json'), json_str);
+	// Migrate from js-yaml@3 to js-yaml@4
+	// const grammar = yaml.safeLoad(text);
+	const grammar = yaml.load(text);
 	const out = plist.build(grammar);
+	// Write plist (xml) format
 	fs.writeFileSync(path.join(__dirname, 'syntaxes', 'markdown.tmLanguage'), out);
 };
 

@@ -26,6 +26,72 @@
     </array>
     <key>repository</key>
     <dict>
+      <key>frontMatter</key>
+      <dict>
+        <key>patterns</key>
+        <array>
+          <dict>
+            <key>include</key>
+            <string>#frontMatter_yaml</string>
+          </dict>
+          <dict>
+            <key>include</key>
+            <string>#frontMatter_toml</string>
+          </dict>
+          <dict>
+            <key>include</key>
+            <string>#frontMatter_json</string>
+          </dict>
+        </array>
+      </dict>
+      <key>frontMatter_yaml</key>
+      <dict>
+        <key>begin</key>
+        <string>\A-{3}\s*$</string>
+        <key>contentName</key>
+        <string>meta.embedded.block.yaml.frontmatter</string>
+        <key>patterns</key>
+        <array>
+          <dict>
+            <key>include</key>
+            <string>source.yaml</string>
+          </dict>
+        </array>
+        <key>end</key>
+        <string>(^|\G)-{3}|\.{3}\s*$</string>
+      </dict>
+      <key>frontMatter_toml</key>
+      <dict>
+        <key>begin</key>
+        <string>\A+{3}\s*$</string>
+        <key>contentName</key>
+        <string>meta.embedded.block.toml.frontmatter</string>
+        <key>patterns</key>
+        <array>
+          <dict>
+            <key>include</key>
+            <string>source.ini</string>
+          </dict>
+        </array>
+        <key>end</key>
+        <string>(^|\G)+{3}|\.{3}\s*$</string>
+      </dict>
+      <key>frontMatter_json</key>
+      <dict>
+        <key>begin</key>
+        <string>\A\{\s*$</string>
+        <key>contentName</key>
+        <string>meta.embedded.block.json.frontmatter</string>
+        <key>patterns</key>
+        <array>
+          <dict>
+            <key>include</key>
+            <string>source.json</string>
+          </dict>
+        </array>
+        <key>end</key>
+        <string>(^|\G)\}\s*$</string>
+      </dict>
       <key>block</key>
       <dict>
         <key>patterns</key>
@@ -2958,6 +3024,59 @@
           </dict>
         </array>
       </dict>
+      <key>fenced_code_block_toml</key>
+      <dict>
+        <key>begin</key>
+        <string>(^|\G)(\s*)(`{3,}|~{3,})\s*(?i:(toml)((\s+|:|,|\{|\?)[^`~]*)?$)</string>
+        <key>name</key>
+        <string>markup.fenced_code.block.markdown</string>
+        <key>end</key>
+        <string>(^|\G)(\2|\s{0,3})(\3)\s*$</string>
+        <key>beginCaptures</key>
+        <dict>
+          <key>3</key>
+          <dict>
+            <key>name</key>
+            <string>punctuation.definition.markdown</string>
+          </dict>
+          <key>4</key>
+          <dict>
+            <key>name</key>
+            <string>fenced_code.block.language.markdown</string>
+          </dict>
+          <key>5</key>
+          <dict>
+            <key>name</key>
+            <string>fenced_code.block.language.attributes.markdown</string>
+          </dict>
+        </dict>
+        <key>endCaptures</key>
+        <dict>
+          <key>3</key>
+          <dict>
+            <key>name</key>
+            <string>punctuation.definition.markdown</string>
+          </dict>
+        </dict>
+        <key>patterns</key>
+        <array>
+          <dict>
+            <key>begin</key>
+            <string>(^|\G)(\s*)(.*)</string>
+            <key>while</key>
+            <string>(^|\G)(?!\s*([`~]{3,})\s*$)</string>
+            <key>contentName</key>
+            <string>meta.embedded.block.toml</string>
+            <key>patterns</key>
+            <array>
+              <dict>
+                <key>include</key>
+                <string>source.ini</string>
+              </dict>
+            </array>
+          </dict>
+        </array>
+      </dict>
       <key>fenced_code_block</key>
       <dict>
         <key>patterns</key>
@@ -3177,6 +3296,10 @@
           <dict>
             <key>include</key>
             <string>#fenced_code_block_bibtex</string>
+          </dict>
+          <dict>
+            <key>include</key>
+            <string>#fenced_code_block_toml</string>
           </dict>
           <dict>
             <key>include</key>
@@ -3806,22 +3929,6 @@
         <string>(^|\G)[ ]{0,3}([\*\-\_])([ ]{0,2}\2){2,}[ \t]*$\n?</string>
         <key>name</key>
         <string>meta.separator.markdown</string>
-      </dict>
-      <key>frontMatter</key>
-      <dict>
-        <key>begin</key>
-        <string>\A-{3}\s*$</string>
-        <key>contentName</key>
-        <string>meta.embedded.block.frontmatter</string>
-        <key>patterns</key>
-        <array>
-          <dict>
-            <key>include</key>
-            <string>source.yaml</string>
-          </dict>
-        </array>
-        <key>end</key>
-        <string>(^|\G)-{3}|\.{3}\s*$</string>
       </dict>
       <key>inline</key>
       <dict>
